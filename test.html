@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pyodide JavaScript Interoperability</title>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.17.0/full/pyodide.js"></script>
+</head>
+<body>
+    <h1>Pyodide JavaScript Interoperability</h1>
+    <button onclick="runPython()">Run Python</button>
+    <pre id="output"></pre>
+    <script>
+        async function loadPyodideAndPackages() {
+            window.pyodide = await loadPyodide();
+        }
+        loadPyodideAndPackages();
+        async function runPython() {
+            await pyodide.runPythonAsync(`
+import js
+def my_python_function():
+    return "Hello from Python!"
+
+js_result = js.eval("document.body.clientWidth")
+python_result = my_python_function()
+js.console.log(f"JavaScript says: document width is {js_result}")
+python_result
+            `).then((result) => {
+                document.getElementById("output").innerText = result;
+            });
+        }
+    </script>
+</body>
+</html>
