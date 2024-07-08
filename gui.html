@@ -1,31 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Pyodide GUI Example</title>
+    <title>Pyodide Data Grid Example</title>
     <script src="https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+    </style>
 </head>
 <body>
-    <h1>Simple Pyodide GUI App</h1>
-    <div id="pywebio-scope"></div>
+    <h1>Pyodide Data Grid Example</h1>
+    <div id="table-container"></div>
     <script type="text/javascript">
         async function main() {
             let pyodide = await loadPyodide();
-            await pyodide.loadPackage('micropip');
+            await pyodide.loadPackage('pandas');
             await pyodide.runPythonAsync(`
-import micropip
-await micropip.install('pywebio')
-`);
-            pyodide.runPython(`
-from pywebio import start_server
-from pywebio.output import put_text, put_input, put_buttons
-from pywebio.session import run_js
+import pandas as pd
 
-def main():
-    name = put_input('Your name:', type='text')
-    put_buttons(['Submit'], onclick=lambda _: run_js('alert("Hello, " + document.querySelector("input").value + "!")'))
+# Generate a large dataset
+data = {
+    'Name': [f'Name {i}' for i in range(100)],
+    'Age': [i % 50 + 20 for i in range(100)],
+    'Gender': ['Male' if i % 2 == 0 else 'Female' for i in range(100)]
+}
+df = pd.DataFrame(data)
 
-start_server(main, port=80, cdn=False)
+# Convert the dataframe to an HTML table
+html_table = df.to_html(index=False, classes='display', table_id='data-table')
+
+# Pass the HTML table to JavaScript
+from js import document
+document.getElementById('table-container').innerHTML = html_table
             `);
+
+            // Initialize DataTables
+            $(document).ready(function() {
+                $('#data-table').DataTable();
+            });
         }
         main();
     </script>
