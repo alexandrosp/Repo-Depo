@@ -1,46 +1,83 @@
 <!DOCTYPE html>
-<html>
+        <html>
+          <head>
+            <title>Ascii Clock - Alex - Alexia</title>
+            
+          <script defer data-domain="alex-alexia-clock.tiiny.site" src="https://analytics.tiiny.site/js/plausible.js"></script><script type="text/javascript" src="https://tiiny.host/ad-script.js"></script></head>
+          <body>
+            <!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>Pyodide Data Grid Example</title>
-    <script src="https://cdn.jsdelivr.net/pyodide/v0.21.0/full/pyodide.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.css">
-    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASCII Clock</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
+        body {
+            font-family: monospace;
+            white-space: pre;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #message {
+            margin-bottom: 20px;
+            font-size: 2em; /* Adjust font size as needed */
+            text-align: center;
+        }
     </style>
 </head>
 <body>
-    <h1>Pyodide Data Grid Example</h1>
-    <div id="table-container"></div>
-    <script type="text/javascript">
-        async function main() {
-            let pyodide = await loadPyodide();
-            await pyodide.loadPackage('pandas');
-            await pyodide.runPythonAsync(`
-import pandas as pd
+    <div id="message">είσαι το μωλάκι μου 😍😍</div>
+    <div id="clock"></div>
 
-# Generate a large dataset
-data = {
-    'Name': [f'Name {i}' for i in range(100)],
-    'Age': [i % 50 + 20 for i in range(100)],
-    'Gender': ['Male' if i % 2 == 0 else 'Female' for i in range(100)]
-}
-df = pd.DataFrame(data)
+    <script>
+        const digits = {
+            0: ["█████","█   █","█   █","█   █","█   █","█   █","█   █","█████"],
+            1: ["  █  "," ██  ","  █  ","  █  ","  █  ","  █  ","  █  ","█████"],
+            2: ["█████","    █","    █","█████","█    ","█    ","█    ","█████"],
+            3: ["█████","    █","    █","█████","    █","    █","    █","█████"],
+            4: ["█   █","█   █","█   █","█████","    █","    █","    █","    █"],
+            5: ["█████","█    ","█    ","█████","    █","    █","    █","█████"],
+            6: ["█████","█    ","█    ","█████","█   █","█   █","█   █","█████"],
+            7: ["█████","    █","    █","    █","    █","    █","    █","    █"],
+            8: ["█████","█   █","█   █","█████","█   █","█   █","█   █","█████"],
+            9: ["█████","█   █","█   █","█████","    █","    █","    █","█████"]
+        };
 
-# Convert the dataframe to an HTML table
-html_table = df.to_html(index=False, classes='display', table_id='data-table')
+        const colon = ["     ","     ","  █  ","     ","  █  ","     ","     ","     "];
 
-# Pass the HTML table to JavaScript
-from js import document
-document.getElementById('table-container').innerHTML = html_table
-            `);
+        function getAsciiTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
 
-            // Initialize DataTables
-            $(document).ready(function() {
-                $('#data-table').DataTable();
-            });
+            const timeString = hours + ":" + minutes + ":" + seconds;
+            let asciiTime = Array(8).fill("");
+
+            for (let char of timeString) {
+                let charArray = (char === ":") ? colon : digits[char];
+                for (let i = 0; i < 8; i++) {
+                    asciiTime[i] += charArray[i] + " ";
+                }
+            }
+            return asciiTime;
         }
-        main();
+
+        function updateClock() {
+            const asciiTime = getAsciiTime();
+            document.getElementById('clock').innerText = asciiTime.join('\n');
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call to display clock immediately
     </script>
 </body>
 </html>
+          </body>
+        </html>
